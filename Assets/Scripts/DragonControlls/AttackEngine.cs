@@ -71,7 +71,7 @@ public class AttackEngine : MonoBehaviour
         foreach(var x in colliderList)
         {
             x.ColliderOn();
-            Debug.Log("turned on for " + x);
+            //Debug.Log("turned on for " + x);
         }
     }
 

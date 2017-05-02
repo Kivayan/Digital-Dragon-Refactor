@@ -32,29 +32,30 @@ namespace movementEngine
 
         private void Start()
         {
-            walk = GetComponent<Walk>();
-            fly = GetComponent<Flying>();
-            currentMovement = walk;
+            walk              = GetComponent<Walk>();
+            fly               = GetComponent<Flying>();
+            currentMovement   = walk;
             currentMovement.SetCurrentRotation(new Vector3(0, 0, 0));
-            flightStamina = new Timer(startStaminaValue);
-            controller = GetComponent<CharacterController>();
-            anim = GetComponent<AnimatorHandler>();
-            dist = GetComponent<Distance>();
+            flightStamina     = new Timer(startStaminaValue);
             flySafeStartTimer = new Timer(flySafeStart);
+            controller        = GetComponent<CharacterController>();
+            anim              = GetComponent<AnimatorHandler>();
+            dist              = GetComponent<Distance>();
+            
         }
 
         private void Update()
         {
-            flightStamina.TimerTracker();
-            flySafeStartTimer.TimerTracker();
-            MonitorFly();
+            
+            FlyMonitoring();
             SwitchMovementTypeSimple();
             currentMovement.Move();
             DebugInfo();
-            LandingDistanceTracker();
-            // Debug.Log("Stamina = " + flightStaminaCurrentValue);
+            
         }
 
+
+        //for Debuging Purposes
         private void SwitchMovementTypeSimple()
         {
             if (Input.GetKeyDown(KeyCode.I))
@@ -64,23 +65,29 @@ namespace movementEngine
                 SwitchOnFly();
         }
 
-        private void MonitorFly()
+
+        private void FlyMonitoring()
         {
-            flightStaminaCurrentValue = flightStamina.GetCurrentTimerValue();
-
-            //When stamina is over, trurn on gravity and only on touchdown switch on walk
-            if (flightStaminaCurrentValue <= 0 && currentMovement == fly)
+            if (currentMovement == fly)
             {
-                if (controller.isGrounded != true)
-                {
-                    fly.EnableGravity();
-                    fly.BlockMovement();
-                }
-                    
-                else
-                    SwitchOnWalk();
-            }
+                LandingDistanceTracker();
+                flightStamina.TimerTracker();
+                flySafeStartTimer.TimerTracker();
+                flightStaminaCurrentValue = flightStamina.GetCurrentTimerValue();
 
+                //When stamina is over, trurn on gravity and only on touchdown switch on walk
+                if (flightStaminaCurrentValue <= 0 && currentMovement == fly)
+                {
+                    if (controller.isGrounded != true)
+                    {
+                        fly.EnableGravity();
+                        fly.BlockMovement();
+                    }
+
+                    else
+                        SwitchOnWalk();
+                }
+            }
             DoubleSpaceFlightTrigger();
         }
 
@@ -95,17 +102,17 @@ namespace movementEngine
             if (flyTriggerTimer >= awaitSecondSpaceTime)
             {
                 awaitingSecondSpace = false;
-                startCount = false;
+                startCount          = false;
                 awaitingSecondSpace = false;
-                flyTriggerTimer = 0;
+                flyTriggerTimer     = 0;
             }
 
             if (awaitingSecondSpace && Input.GetKeyDown(KeyCode.Space))
             {
                 SwitchOnFly();
-                startCount = false;
+                startCount          = false;
                 awaitingSecondSpace = false;
-                flyTriggerTimer = 0;
+                flyTriggerTimer     = 0;
             }
 
             if (startCount == true)
@@ -151,12 +158,12 @@ namespace movementEngine
 
         private void DebugInfo()
         {
-            DebugPanel.Log("Engine", "MoveEngineInfo", currentMovement);
-            DebugPanel.Log("flyTriggerTimer", "FlySwitchProperties", flyTriggerTimer);
+            DebugPanel.Log("Engine"             , "MoveEngineInfo", currentMovement);
+            DebugPanel.Log("flyTriggerTimer"    , "FlySwitchProperties", flyTriggerTimer);
             DebugPanel.Log("awaitingSecondSpace", "FlySwitchProperties", awaitingSecondSpace);
-            DebugPanel.Log("startCount", "FlySwitchProperties", startCount);
-            DebugPanel.Log("StaminaCoundown", "FlightParameters", flightStaminaCurrentValue);
-            DebugPanel.Log("Velocity", controller.velocity);
+            DebugPanel.Log("startCount"         , "FlySwitchProperties", startCount);
+            DebugPanel.Log("StaminaCoundown"    , "FlightParameters", flightStaminaCurrentValue);
+            DebugPanel.Log("Velocity"           , controller.velocity);
         }
 
     }

@@ -5,21 +5,21 @@ namespace movementEngine
 {
     public class Walk : MonoBehaviour, IMovement
     {
-        public float speed = 6.0F;
-        public float shiftSpeed;
+        public float speed           = 6.0F;
+        public float shiftSpeed      = 12f;
         public float currentSpeed;
-        public bool isSprinting = false;
-        private AnimatorHandler anim;
+        public bool isSprinting      = false;
+        
         private bool movementBlocked = false;
 
         //good gravity and jumpspeed are 70/40
         public float jumpSpeed = 40;
+        public float gravity   = 65;
 
-        public float gravity = 65;
         private Vector3 moveDirection = Vector3.zero;
 
         private bool NormalizedRotation = true;
-        private float timer = 0;
+        private float timerNormalizeRotation = 0;
 
         [Range(20, 150)] public float mouseYSpeed = 50;
 
@@ -27,6 +27,8 @@ namespace movementEngine
         private float XRotate = 0;
         private float XRotateNormalizeStartPoint;
         [Range(0, 5)] public float XBackToZeroSpeed;
+
+        private AnimatorHandler anim;
 
         private void Start()
         {
@@ -109,18 +111,14 @@ namespace movementEngine
 
             if (NormalizedRotation == false)
             {
-                timer += XBackToZeroSpeed * Time.deltaTime;
-                XRotate = Mathf.Lerp(XRotateNormalizeStartPoint, 0, timer);
+                timerNormalizeRotation += XBackToZeroSpeed * Time.deltaTime;
+                XRotate = Mathf.Lerp(XRotateNormalizeStartPoint, 0, timerNormalizeRotation);
                 if (XRotate == 0)
                 {
                     NormalizedRotation = true;
-                    timer = 0;
+                    timerNormalizeRotation = 0;
                 }
             }
-        }
-
-        private void Land()
-        {
         }
 
         void IMovement.SetCurrentRotation(Vector3 startingRotation)
