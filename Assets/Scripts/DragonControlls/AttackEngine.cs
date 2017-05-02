@@ -44,7 +44,7 @@ public class AttackEngine : MonoBehaviour
         if (Input.GetKeyDown(armAttackKey))
         {
             animHandler.TriggerAttack("JumpAttack");
-            TurnOnColliders(tailsColliders);
+            TurnOnColliders(armColliders);
             PlayEffect(audioArmAttack);
         }
 
@@ -71,6 +71,7 @@ public class AttackEngine : MonoBehaviour
         foreach(var x in colliderList)
         {
             x.ColliderOn();
+            Debug.Log("turned on for " + x);
         }
     }
 
