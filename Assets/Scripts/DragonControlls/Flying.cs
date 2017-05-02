@@ -15,8 +15,6 @@ namespace movementEngine
 
         private bool movementBlocked = false;
 
-        public float distanceLimit;
-        private bool limtBreached = false;
         private Vector3 moveDirection = Vector3.zero;
 
         [Range(20, 150)] public float mouseYSpeed = 50;
@@ -24,14 +22,6 @@ namespace movementEngine
 
         private float YRotate = 0;
         private float XRotate = 0;
-
-        private float distFromGround;
-        private Distance dist;
-
-        private void Start()
-        {
-            dist = GetComponent<Distance>();
-        }
 
         void IMovement.Move()
         {
@@ -42,7 +32,6 @@ namespace movementEngine
             }
             
             DebugInfo();
-            UpdateDist();
         }
 
         private void Move()
@@ -56,16 +45,6 @@ namespace movementEngine
 
             RiseAndDescend();
             Accelerate();
-
-            if (distFromGround >= distanceLimit)
-            {
-                limtBreached = true;
-                moveDirection = Vector3.down;
-            }
-            else
-            {
-                limtBreached = false;
-            }
 
             controller.Move(moveDirection * Time.deltaTime);
         }
@@ -97,8 +76,6 @@ namespace movementEngine
         private void DebugInfo()
         {
             DebugPanel.Log("FlySpeed", "FlightParameters", currentSpeed);
-            DebugPanel.Log("LimitBreached", "FlightParameters", limtBreached);
-            DebugPanel.Log("distFromGround", "FlightParameters", distFromGround);
             DebugPanel.Log("gravity", "FlightParameters", gravity);
         }
 
@@ -110,11 +87,6 @@ namespace movementEngine
         public void DisableGravity()
         {
             gravity = 0f;
-        }
-
-        private void UpdateDist()
-        {
-            distFromGround = dist.GetCurrentDistance();
         }
 
         void IMovement.SetCurrentRotation(Vector3 startingRotation)
