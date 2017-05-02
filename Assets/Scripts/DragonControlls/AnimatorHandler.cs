@@ -28,10 +28,6 @@ public class AnimatorHandler : MonoBehaviour
 
     private bool isDead = false;
 
-    ///populate attackNames - they should match exactly Animator parameters
-    ///this will serve as a reffernce, but code will validate if called name is contained within this list
-    public List<string> attacks;
-
     private void Start()
     {
         anim = GetComponentInChildren<Animator>();
@@ -41,14 +37,16 @@ public class AnimatorHandler : MonoBehaviour
     private void Update()
     {
         DetectMovement();
-        DetectMovementDirectionFly();
-        DetectMovementDirectionWalkSides();
+        DetectVerticalMovement();
+        DetectHorizontalMovement();
         DetectMovementDirectionWalkDirection();
         DebugInfo();
         DetectSpecificMovements();
     }
 
-    private void DetectMovementDirectionFly()
+
+    //Checks if characted ascends, descends or is stationary
+    private void DetectVerticalMovement()
     {
         if (isFlying)
         {
@@ -65,7 +63,8 @@ public class AnimatorHandler : MonoBehaviour
         }
     }
 
-    private void DetectMovementDirectionWalkSides()
+    //checks if character moves to the side
+    private void DetectHorizontalMovement()
     {
         
             if (Input.GetKey(KeyCode.D))
@@ -75,11 +74,11 @@ public class AnimatorHandler : MonoBehaviour
             else
                 horizontalMovement = 0;
 
-
             anim.SetFloat("horizontalMovement", horizontalMovement, 1f, Time.deltaTime * animationDumpingSpeed);
-
     }
 
+
+    //checks if Character moves forward, sprints, stays or moves back
     private void DetectMovementDirectionWalkDirection()
     {
         if (isFlying == false)
@@ -112,10 +111,6 @@ public class AnimatorHandler : MonoBehaviour
         }
     }
 
-
-
-
-
     public void SpeedIncreased()
     {
         anim.SetFloat("speedMultiplier", speedMultiplierIncreased);
@@ -136,15 +131,11 @@ public class AnimatorHandler : MonoBehaviour
 
     public void TriggerJump()
     {
-            anim.SetTrigger("jump");
+        anim.SetTrigger("jump");
     }
 
     public void TriggerAttack(string attackName)
     {
-        if (!attacks.Contains(attackName))
-        {
-            throw new Exception("Provided attack name is not valid:  " + attackName);
-        }
         anim.SetTrigger(attackName);
     }
 
@@ -160,11 +151,11 @@ public class AnimatorHandler : MonoBehaviour
 
     private void DebugInfo()
     {
-        DebugPanel.Log("isFlying", "anim", isFlying);
-        DebugPanel.Log("isMoving", "anim", isMoving);
-        DebugPanel.Log("verticalMovement", "anim", verticalMovement);
+        DebugPanel.Log("isFlying"          , "anim", isFlying);
+        DebugPanel.Log("isMoving"          , "anim", isMoving);
+        DebugPanel.Log("verticalMovement"  , "anim", verticalMovement);
         DebugPanel.Log("horizontalMovement", "anim", horizontalMovement);
-        DebugPanel.Log("directionMovement", "anim", directionMovement);
+        DebugPanel.Log("directionMovement" , "anim", directionMovement);
 
     }
 }
