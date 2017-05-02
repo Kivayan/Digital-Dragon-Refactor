@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class AttackEngine : MonoBehaviour
 {
@@ -10,20 +11,17 @@ public class AttackEngine : MonoBehaviour
 
 
     public KeyCode tailAttackKey;
-    public ColliderController tailCollider1;
-    public ColliderController tailCollider2;
+    public List<ColliderController> tailsColliders;
 
     public KeyCode mouthAttackKey;
-    public ColliderController jawTop;
-    public ColliderController jawBot;
+    public List<ColliderController> mouthColliders;
 
     public KeyCode armAttackKey;
-    public ColliderController armLeft;
-    public ColliderController armRight;
-
-    public AudioClip audioTailHit;
-    public AudioClip audioFistHit;
-    public AudioClip audioEat;
+    public List<ColliderController> armColliders;
+    
+    public AudioClip audioTailAttack;
+    public AudioClip audioArmAttack;
+    public AudioClip audioMouthAttack;
 
     private AudioSource effectAudio;
 
@@ -46,33 +44,39 @@ public class AttackEngine : MonoBehaviour
         if (Input.GetKeyDown(armAttackKey))
         {
             animHandler.TriggerAttack("JumpAttack");
-            armLeft.ColliderOn();
-            armRight.ColliderOn();
-            effectAudio.clip = audioFistHit;
-            effectAudio.Play();
+            TurnOnColliders(tailsColliders);
+            PlayEffect(audioArmAttack);
         }
 
         //Mouth Attack
         if (Input.GetKeyDown(mouthAttackKey))
         {
             animHandler.TriggerAttack("HapTrigger");
-            owca.GetComponent<Owca_script>().eat = true;
-            jawTop.ColliderOn();
-            jawBot.ColliderOn();
-            effectAudio.clip = audioEat;
-            effectAudio.Play();
+            //owca.GetComponent<Owca_script>().eat = true;
+            TurnOnColliders(mouthColliders);
+            PlayEffect(audioMouthAttack);
         }
 
         //Tail Attack
         if (Input.GetKeyDown(tailAttackKey))
         {
             animHandler.TriggerAttack("TailAttack");
-            tailCollider1.ColliderOn();
-            if(tailCollider2 != null)
-                tailCollider2.ColliderOn();
-
-            effectAudio.clip = audioTailHit;
-            effectAudio.Play();
+            TurnOnColliders(tailsColliders);
+            PlayEffect(audioTailAttack);
         }
+    }
+
+    private void TurnOnColliders(List<ColliderController> colliderList)
+    {
+        foreach(var x in colliderList)
+        {
+            x.ColliderOn();
+        }
+    }
+
+    private void PlayEffect(AudioClip clip)
+    {
+        effectAudio.clip = clip;
+        effectAudio.Play();
     }
 }
