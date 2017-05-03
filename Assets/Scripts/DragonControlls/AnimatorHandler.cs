@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class AnimatorHandler : MonoBehaviour
 {
-    private Animator anim;
+    public Animator anim;
     private CharacterController controller;
 
     private bool isMoving;
@@ -41,7 +41,6 @@ public class AnimatorHandler : MonoBehaviour
         DetectHorizontalMovement();
         DetectMovementDirectionWalkDirection();
         DebugInfo();
-        DetectSpecificMovements();
     }
 
 
@@ -97,18 +96,17 @@ public class AnimatorHandler : MonoBehaviour
         }
     }
 
-    private void DetectSpecificMovements()
+    public void FlyAnimOn()
     {
-        if (isFlying)
-            anim.SetBool("isFlying", true);
-        else
-            anim.SetBool("isFlying", false);
+        anim.SetBool("isFlying", true);
+        isFlying = true;
+    }
 
-        if (isJumping)
-        {
-            TriggerJump();
-            isJumping = false;
-        }
+    public void FlyAnimOff()
+    {
+        anim.SetBool("isFlying", false);
+        isFlying = false;
+
     }
 
     public void SpeedIncreased()

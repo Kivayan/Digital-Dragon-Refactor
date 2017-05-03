@@ -143,6 +143,7 @@
     <Compile Include="Assets\Scripts\DragonControlls\Interfaces.cs" />
     <Compile Include="Assets\Scripts\DragonControlls\MovementController.cs" />
     <Compile Include="Assets\Scripts\DragonControlls\StaminaController.cs" />
+    <Compile Include="Assets\Scripts\DragonControlls\StaminaManager.cs" />
     <Compile Include="Assets\Scripts\DragonControlls\Timer.cs" />
     <Compile Include="Assets\Scripts\DragonControlls\Walk.cs" />
     <Compile Include="Assets\Scripts\Enemies\AIBehaviour.cs" />

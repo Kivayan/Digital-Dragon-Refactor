@@ -23,22 +23,30 @@ namespace movementEngine
         private float YRotate = 0;
         private float XRotate = 0;
 
+        private StaminaManager staminaManager;
+        public float sprintStaminaCostPerSec;
+
+        void OnEnable()
+        {
+            staminaManager = GetComponent<StaminaManager>();
+        }
+
         void IMovement.Move()
         {
             if(!movementBlocked)
             {
-                Move();
                 Rotate();
             }
-            
+
+            Move();
             DebugInfo();
         }
 
         private void Move()
         {
             CharacterController controller = GetComponent<CharacterController>();
-
-            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            if(!movementBlocked)
+                moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             moveDirection = transform.TransformDirection(moveDirection);
             moveDirection *= currentSpeed;
             moveDirection.y -= gravity;//* Time.deltaTime;
@@ -67,7 +75,7 @@ namespace movementEngine
 
         private void Accelerate()
         {
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift) && staminaManager.stamina.ContinousSubstract(sprintStaminaCostPerSec))
                 currentSpeed = shiftSpeed;
             else
                 currentSpeed = speed;

@@ -5,16 +5,17 @@ namespace movementEngine
 {
     public class Walk : MonoBehaviour, IMovement
     {
-        public float speed           = 6.0F;
-        public float shiftSpeed      = 12f;
+        public float speed = 6.0F;
+        public float shiftSpeed = 12f;
         public float currentSpeed;
-        public bool isSprinting      = false;
-        
+        public bool isSprinting = false;
+
         private bool movementBlocked = false;
 
         //good gravity and jumpspeed are 70/40
         public float jumpSpeed = 40;
-        public float gravity   = 65;
+
+        public float gravity = 65;
 
         private Vector3 moveDirection = Vector3.zero;
 
@@ -29,15 +30,19 @@ namespace movementEngine
         [Range(0, 5)] public float XBackToZeroSpeed;
 
         private AnimatorHandler anim;
+        private StaminaManager staminaManager;
+        public float sprintStaminaCostPerSec;
+        public float jumpStaminaCost;
 
         private void Start()
         {
             anim = GetComponent<AnimatorHandler>();
+            staminaManager = GetComponent<StaminaManager>();
         }
 
         private void MonitorSpeed()
         {
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift) && staminaManager.stamina.ContinousSubstract(sprintStaminaCostPerSec))
             {
                 currentSpeed = shiftSpeed;
                 isSprinting = true;
@@ -58,7 +63,7 @@ namespace movementEngine
                 Walking();
                 Rotate();
             }
-            
+
             DebugInfo();
             MonitorSpeed();
         }
@@ -74,11 +79,12 @@ namespace movementEngine
 
                 if (Input.GetButton("Jump"))
                 {
-                    moveDirection.y = jumpSpeed;
-                    anim.isJumping = true;
-
+                    if (staminaManager.stamina.SingleSubstract(jumpStaminaCost))
+                    {
+                        moveDirection.y = jumpSpeed;
+                        anim.TriggerJump();
+                    }
                 }
-
             }
             moveDirection.y -= gravity * Time.deltaTime;
             controller.Move(moveDirection * Time.deltaTime);

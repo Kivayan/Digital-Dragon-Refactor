@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class StaminaController : MonoBehaviour
+public class StaminaController 
 {
     public UI_Script UI;
 
@@ -11,24 +11,23 @@ public class StaminaController : MonoBehaviour
     private bool allowRefill = true;
     private float tmpRefillRate = 1;
 
-    private void Update()
-    {
-        //update UI Graphics
-        UI.UpdateStaminaGraphic(currentStamina / maxStamina);
-    }
+
 
     /// <summary>
     /// Substract from stamina as long as called. while called Refill will be blocked.
     /// Will not drop below 0.
     /// </summary>
     /// <param name="substractValuePerSec"></param>
-    public void ContinousSubstract(float substractValuePerSec)
+    public bool ContinousSubstract(float substractValuePerSec)
     {
         if (ValidateSufficientStamina(substractValuePerSec * Time.deltaTime))
         {
             allowRefill = false;
             currentStamina -= substractValuePerSec * Time.deltaTime;
+            return true;
         }
+        else
+            return false;
     }
 
     /// <summary>
@@ -147,5 +146,10 @@ public class StaminaController : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public float GetStaminaPercentage()
+    {
+        return currentStamina / maxStamina* 100;
     }
 }

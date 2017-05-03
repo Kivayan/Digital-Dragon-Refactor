@@ -30,30 +30,30 @@ namespace movementEngine
         public float startStaminaValue;
         public float flySafeStart;
 
+        private StaminaManager staminaManager;
+        public float staminaFlyCost;
+
         private void Start()
         {
-            walk              = GetComponent<Walk>();
-            fly               = GetComponent<Flying>();
-            currentMovement   = walk;
+            walk = GetComponent<Walk>();
+            fly = GetComponent<Flying>();
+            currentMovement = walk;
             currentMovement.SetCurrentRotation(new Vector3(0, 0, 0));
-            flightStamina     = new Timer(startStaminaValue);
+            flightStamina = new Timer(startStaminaValue);
             flySafeStartTimer = new Timer(flySafeStart);
-            controller        = GetComponent<CharacterController>();
-            anim              = GetComponent<AnimatorHandler>();
-            dist              = GetComponent<Distance>();
-            
+            controller = GetComponent<CharacterController>();
+            anim = GetComponent<AnimatorHandler>();
+            dist = GetComponent<Distance>();
+            staminaManager = GetComponent<StaminaManager>();
         }
 
         private void Update()
         {
-            
             FlyMonitoring();
             SwitchMovementTypeSimple();
             currentMovement.Move();
             DebugInfo();
-            
         }
-
 
         //for Debuging Purposes
         private void SwitchMovementTypeSimple()
@@ -65,15 +65,16 @@ namespace movementEngine
                 SwitchOnFly();
         }
 
-
         private void FlyMonitoring()
         {
             if (currentMovement == fly)
             {
+                bool staminaSufficient = staminaManager.stamina.ContinousSubstract(staminaFlyCost);
                 LandingDistanceTracker();
                 flightStamina.TimerTracker();
                 flySafeStartTimer.TimerTracker();
                 flightStaminaCurrentValue = flightStamina.GetCurrentTimerValue();
+                /*
 
                 //When stamina is over, trurn on gravity and only on touchdown switch on walk
                 if (flightStaminaCurrentValue <= 0 && currentMovement == fly)
@@ -83,7 +84,18 @@ namespace movementEngine
                         fly.EnableGravity();
                         fly.BlockMovement();
                     }
+                    else
+                        SwitchOnWalk();
+                }
+                */
 
+                if (!staminaSufficient && currentMovement == fly)
+                {
+                    if (controller.isGrounded != true)
+                    {
+                        fly.EnableGravity();
+                        //fly.BlockMovement();
+                    }
                     else
                         SwitchOnWalk();
                 }
@@ -102,17 +114,17 @@ namespace movementEngine
             if (flyTriggerTimer >= awaitSecondSpaceTime)
             {
                 awaitingSecondSpace = false;
-                startCount          = false;
+                startCount = false;
                 awaitingSecondSpace = false;
-                flyTriggerTimer     = 0;
+                flyTriggerTimer = 0;
             }
 
             if (awaitingSecondSpace && Input.GetKeyDown(KeyCode.Space))
             {
                 SwitchOnFly();
-                startCount          = false;
+                startCount = false;
                 awaitingSecondSpace = false;
-                flyTriggerTimer     = 0;
+                flyTriggerTimer = 0;
             }
 
             if (startCount == true)
@@ -125,7 +137,9 @@ namespace movementEngine
             startingRotation = currentMovement.GetCurrentRotation();
             walk.SetCurrentRotation(startingRotation);
             currentMovement = walk;
-            anim.isFlying = false;
+            anim.FlyAnimOff();
+            staminaManager.stamina.EnableRefill();
+            
         }
 
         private void SwitchOnFly()
@@ -136,8 +150,10 @@ namespace movementEngine
             startingRotation = currentMovement.GetCurrentRotation();
             fly.SetCurrentRotation(startingRotation);
             currentMovement = fly;
-            anim.isFlying = true;
+            anim.FlyAnimOn();
             flySafeStartTimer.TimerOn();
+
+            //staminaManager.stamina.DisableRefill();
         }
 
         private void LandingDistanceTracker()
@@ -148,23 +164,22 @@ namespace movementEngine
                 {
                     Debug.Log("should land");
 
-                        if (controller.isGrounded != true)
-                            fly.EnableGravity();
-                        else
-                            SwitchOnWalk();
+                    if (controller.isGrounded != true)
+                        fly.EnableGravity();
+                    else
+                        SwitchOnWalk();
                 }
             }
         }
 
         private void DebugInfo()
         {
-            DebugPanel.Log("Engine"             , "MoveEngineInfo", currentMovement);
-            DebugPanel.Log("flyTriggerTimer"    , "FlySwitchProperties", flyTriggerTimer);
+            DebugPanel.Log("Engine", "MoveEngineInfo", currentMovement);
+            DebugPanel.Log("flyTriggerTimer", "FlySwitchProperties", flyTriggerTimer);
             DebugPanel.Log("awaitingSecondSpace", "FlySwitchProperties", awaitingSecondSpace);
-            DebugPanel.Log("startCount"         , "FlySwitchProperties", startCount);
-            DebugPanel.Log("StaminaCoundown"    , "FlightParameters", flightStaminaCurrentValue);
-            DebugPanel.Log("Velocity"           , controller.velocity);
+            DebugPanel.Log("startCount", "FlySwitchProperties", startCount);
+            DebugPanel.Log("StaminaCoundown", "FlightParameters", flightStaminaCurrentValue);
+            DebugPanel.Log("Velocity", controller.velocity);
         }
-
     }
 }

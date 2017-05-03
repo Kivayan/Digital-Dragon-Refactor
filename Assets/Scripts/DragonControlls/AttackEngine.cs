@@ -12,13 +12,17 @@ public class AttackEngine : MonoBehaviour
 
     public KeyCode tailAttackKey;
     public List<ColliderController> tailsColliders;
+    public float tailAttackDamage;
 
     public KeyCode mouthAttackKey;
     public List<ColliderController> mouthColliders;
+    public float mouthAttackDamage;
 
     public KeyCode armAttackKey;
     public List<ColliderController> armColliders;
-    
+    public float armAttackDamage;
+
+
     public AudioClip audioTailAttack;
     public AudioClip audioArmAttack;
     public AudioClip audioMouthAttack;

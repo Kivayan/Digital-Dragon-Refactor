@@ -4,6 +4,7 @@ using UnityEngine;
 public class ColliderController : MonoBehaviour
 {
     private Collider coll;
+    public float damage;
     [SerializeField] private float colliderOnDuration = 2f;
 
     private void Start()
